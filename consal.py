@@ -3,12 +3,12 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
 
-# $Rev: 61 $:  
+# $Rev: 62 $:  
 # $Author: ewald $:  
-# $Date: 2017-04-02 13:06:08 +0200 (So, 02. Apr 2017) $:
-# $Id: consal.py 61 2017-04-02 11:06:08Z ewald $ 
+# $Date: 2017-04-02 21:38:51 +0200 (So, 02. Apr 2017) $:
+# $Id: consal.py 62 2017-04-02 19:38:51Z ewald $ 
 
-__my_version__ = "$Revision: 61 $"
+__my_version__ = "$Revision: 62 $"
 
 
 WORKING_DIR="/home/ewald/CAD/python/_work/consumption_analysis"
@@ -255,11 +255,11 @@ class consumption(object):
             j=0
             i=window_size
             imax=len(self.edta)
-            self.edmata=numpy.copy(self.edta[window_size:])
+            self.edmata=numpy.copy(self.edta[int(window_size):])
             self.edmaca=[]
             while i < imax:
                 #print i, j
-                self.edmaca.append((self.edca[i]-self.edca[j])*scale)
+                self.edmaca.append((self.edca[int(i)]-self.edca[int(j)])*scale)
                 i = i + 1
                 j = j + 1
             #print len(self.edmata)
