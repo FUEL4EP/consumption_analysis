@@ -10,6 +10,7 @@ desc="""consal.py is doing a statistical analysis of electrical power,  water, a
 
 __my_version__ = "$Revision: 58 $"
 
+
 WORKING_DIR="/home/ewald/CAD/python/_work/consumption_analysis"
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -24,6 +25,7 @@ EPSILON=1e-6
 MAX_MEASUREMENT_VARIATION=4
 
 import sys  
+
 import os
 from scipy import stats, interpolate
 import numpy
@@ -93,7 +95,6 @@ class consumption(object):
         #if not os.access(fn, os.R_OK):
             #errMsg("File \'%s\' is not readable!\n\n" % fn)
             #sys.exit(1)
-            
     def set_write_table_name(self, table_name):
         self.write_table_name = table_name.replace(' ', '_')
         fn = self.wd
