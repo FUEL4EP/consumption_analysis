@@ -1,4 +1,0 @@
-#!/bin/bash
-cp electrical_power_consumption.caf electrical_power_consumption.caf.bck
-cp oil_consumption.caf oil_consumption.caf.bck
-cp water_consumption.caf water_consumption.caf.bck
