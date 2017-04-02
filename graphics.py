@@ -1,12 +1,12 @@
 #graphics.py
 # -*- coding: utf-8 -*-
 
-# $Rev: 60 $:  
+# $Rev: 61 $:  
 # $Author: ewald $:  
-# $Date: 2017-03-14 17:24:37 +0100 (Di, 14. Mär 2017) $:
-# $Id: graphics.py 60 2017-03-14 16:24:37Z ewald $ 
+# $Date: 2017-04-02 13:06:08 +0200 (So, 02. Apr 2017) $:
+# $Id: graphics.py 61 2017-04-02 11:06:08Z ewald $ 
 
-__version__ = "$Revision: 60 $"
+__version__ = "$Revision: 61 $"
 
 import pylab
 from pylab import  plt, DateFormatter,  getp, setp

@@ -3,12 +3,12 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
 
-# $Rev: 58 $:  
+# $Rev: 61 $:  
 # $Author: ewald $:  
-# $Date: 2016-09-13 21:48:20 +0200 (Di, 13. Sep 2016) $:
-# $Id: consal.py 58 2016-09-13 19:48:20Z ewald $ 
+# $Date: 2017-04-02 13:06:08 +0200 (So, 02. Apr 2017) $:
+# $Id: consal.py 61 2017-04-02 11:06:08Z ewald $ 
 
-__my_version__ = "$Revision: 58 $"
+__my_version__ = "$Revision: 61 $"
 
 
 WORKING_DIR="/home/ewald/CAD/python/_work/consumption_analysis"
