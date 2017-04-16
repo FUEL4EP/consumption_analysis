@@ -11,8 +11,8 @@ Put all python source code files of this github reposotory into a working direct
 `<working_dir>/..`
 
 1.	consal.py
-1.     graphics.py
-1.     io_module.py
+1.    	graphics.py
+1.	io_module.py
 1.	messaging.py
 
 Optional: Put example data bases into the working directory
