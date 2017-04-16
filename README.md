@@ -81,7 +81,7 @@ Options:
 
 # Examples on usage:
 
-**Please store the provided example data bases *.caf in your working directory**
+    ** Please store the provided example data bases *.caf in your working directory **
 
 1. Run analysis on provided data base for electrical power consumption:
 
@@ -113,7 +113,7 @@ Options:
 	consal -i -o
 
 
-	**Before creating a new data base, please reneame the provided example data bases *.caf in your working directory**
+    ** Before creating a new data base, please reneame the provided example data bases *.caf in your working directory **
 
 7. Create a new data base for electrical power consumption:
 
