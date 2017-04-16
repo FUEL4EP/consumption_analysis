@@ -46,21 +46,36 @@ Usage: consal.py [options]
 consal.py is doing a statistical analysis of electrical power,  water, and oil
 consumptions
 
+
+
 Options:
-  --version         show program's version number and exit
-  -h, --help        show this help message and exit
-  --nc              no consistency check
-  -n                create a new data base
-  -i                input measurement(s)
-  --wdir=DIRECTORY  working directory
-  -v                show version
-  -e                analyze electrical power consumption
-  --ef=FILE         file storing data base for electrical power consumption
-                    analysis
-  -o                analyze oil consumption
-  --of=FILE         file storing data base for oil consumption analysis
-  -w                analyze water consumption
-  --wf=FILE         file storing data base for water consumption analysis
+
+    --version         show program's version number and exit
+  
+    -h, --help        show this help message and exit
+  
+    --nc              no consistency check
+  
+    -n                create a new data base
+  
+    -i                input measurement(s)
+  
+    --wdir=DIRECTORY  working directory
+  
+    -v                show version
+  
+    -e                analyze electrical power consumption
+  
+    --ef=FILE         file storing data base for electrical power consumption
+                      analysis
+                    
+    -o                analyze oil consumption
+  
+    --of=FILE         file storing data base for oil consumption analysis
+  
+    -w                analyze water consumption
+  
+    --wf=FILE         file storing data base for water consumption analysis
 
 
 #Examples on usage:
