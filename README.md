@@ -39,7 +39,7 @@ sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, exceptions
 *  time chart of delta of 1 year moving average of consumption  (matplotlib chart)
 
 
-#Usage:
+# Usage:
 
 Usage: consal.py [options]
 
@@ -79,7 +79,7 @@ Options:
 
 
 
-#Examples on usage:
+# Examples on usage:
 
 **Please store the provided example data bases *.caf in your working directory**
 
@@ -130,7 +130,7 @@ Options:
 
 
 
-#Enjoy and have fun!
+# Enjoy and have fun!
 
 
 
