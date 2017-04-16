@@ -78,6 +78,7 @@ Options:
     --wf=FILE         file storing data base for water consumption analysis
 
 
+
 #Examples on usage:
 
 **Please store the provided example data bases *.caf in your working directory**
@@ -126,6 +127,7 @@ Options:
 9. Create a new data base for heating oil consumption:
 
 	consal -i -n -o
+
 
 
 #Enjoy and have fun!
