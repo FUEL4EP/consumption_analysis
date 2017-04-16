@@ -1,43 +1,45 @@
 # consumption_analysis
-=======================
+
 
 Python statistic software for consumption analysis of electrical power, fresh water, and oil
 
-Installation:
-=============
+# Installation:
 
-Put all python source code files of the reposotory into a working directory
 
-<working_dir>/consal.py
-             /graphics.py
-             /io_module.py
-             /messaging.py
+Put all python source code files of this github reposotory into a working directory
+
+`<working_dir>/..`
+
+1.	consal.py
+1.     graphics.py
+1.     io_module.py
+1.	messaging.py
 
 Optional: Put example data bases into the working directory
 
 
-<working_dir>/electrical_power_consumption.caf
-             /oil_consumption.caf
-             /water_consumption.caf
+`<working_dir>/..`
+
+* 	electrical_power_consumption.caf
+* 	oil_consumption.caf
+*	water_consumption.caf
              
-Required python modules:
+**Required python modules:**
 
 sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, exceptions
 
 
-Statistical analyses:
-=====================
-
-a)  average consumption per day (in command line)
-b)  time chart of consumption with linear regression (matplotlib chart)
-c)  time chart of average consumption between sampling points  (matplotlib chart)
-d)  time chart of 365 days moving average of consumption  (matplotlib chart)
-e)  time chart of delta of 1 year moving average of consumption  (matplotlib chart)
+# Supported statistical analyses:
 
 
-Usage:
-======
+*  average consumption per day (in command line)
+*  time chart of consumption with linear regression (matplotlib chart)
+*  time chart of average consumption between sampling points  (matplotlib chart)
+*  time chart of 365 days moving average of consumption  (matplotlib chart)
+*  time chart of delta of 1 year moving average of consumption  (matplotlib chart)
 
+
+#Usage:
 
 Usage: consal.py [options]
 
@@ -61,56 +63,57 @@ Options:
   --wf=FILE         file storing data base for water consumption analysis
 
 
-Examples on usage:
+#Examples on usage:
 
-# Please store the provided example data bases *.caf in your working directory
+**Please store the provided example data bases *.caf in your working directory**
 
 1. Run analysis on provided data base for electrical power consumption:
 
-consal -e
+	consal -e
+
 
 2. Run analysis on provided data base for water consumption:
 
-consal -w
+	consal -w
 
 
 3. Run analysis on provided data base for heating oil consumption:
 
 
-consal -o
+	consal -o
 
 4. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption:
 
-consal -i -e
+	consal -i -e
 
 5. Add a new consumption value to an existing data base and then run an analysis of water consumption:
 
-consal -i -w
+	consal -i -w
 
 
 6. Add a new consumption value to an existing data base and then run an analysis of heating oil consumption:
 
 
-consal -i -o
+	consal -i -o
 
 
-# Before creating a new data base, please reneame the provided example data bases *.caf in your working directory
+	**Before creating a new data base, please reneame the provided example data bases *.caf in your working directory**
 
 7. Create a new data base for electrical power consumption:
 
-consal -i -n -e
+	consal -i -n -e
 
 
-7. Create a new data base for water consumption:
+8. Create a new data base for water consumption:
 
-consal -i -n -w
+	consal -i -n -w
 
-7. Create a new data base for heating oil consumption:
+9. Create a new data base for heating oil consumption:
 
-consal -i -n -o
+	consal -i -n -o
 
 
-Enjoy and have fun!
+#Enjoy and have fun!
 
 
 
