@@ -3,10 +3,11 @@
 
 Python statistic software for consumption analysis of electrical power, fresh water, and oil
 
-# Installation:
+# Installation for (K)ubuntu LINUX:
 
 
-Put all python source code files of this github reposotory into a working directory
+1.  Put all python source code files of this github reposotory into a working directory
+2.  Make consal.py executable: 'chmod +x consal.py'
 
 `<working_dir>/..`
 
