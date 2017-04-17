@@ -26,8 +26,11 @@ Optional: Put example data bases into the working directory
              
 **Required python modules:**
 
-sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, exceptions
+optparse, sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, exceptions
 
+** Tested operating systems: **
+
+Kubuntu 14.04, Kubuntu 16.04
 
 # Supported statistical analyses:
 

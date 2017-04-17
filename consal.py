@@ -3,15 +3,13 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
 
-# $Rev: 64 $:
+# $Rev: 66 $:
 # $Author: ewald $:
-# $Date: 2017-04-16 16:28:16 +0200 (So, 16. Apr 2017) $:
-# $Id: consal.py 64 2017-04-16 14:28:16Z ewald $
+# $Date: 2017-04-17 12:01:04 +0200 (Mo, 17. Apr 2017) $:
+# $Id: consal.py 66 2017-04-17 10:01:04Z ewald $
 
-__my_version__ = "$Revision: 64 $"
+__my_version__ = "$Revision: 66 $"
 
-
-WORKING_DIR="/home/ewald/CAD/python/_work/consumption_analysis"
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
 OIL_CONSUMPTION_FILE ="oil_consumption.caf"
@@ -26,7 +24,7 @@ ALPHA=1e-2
 MAX_MEASUREMENT_VARIATION=4
 
 import sys
-
+import optparse
 import os
 from scipy import stats, interpolate
 import numpy
@@ -523,8 +521,10 @@ class float_table(object):
 
 
 def main():
+    
+  
+    WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
 
-    import optparse
     parser = optparse.OptionParser(description=desc,
         version='%prog version ' + __my_version__)
 
