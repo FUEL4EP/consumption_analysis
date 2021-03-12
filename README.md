@@ -1,5 +1,4 @@
-# consumption_analysis
-
+# consumption_analysis [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FFUEL4EP%2Fconsumption_analysis&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
 Python statistic software for consumption analysis of electrical power, fresh water, and oil
 
@@ -24,6 +23,8 @@ Optional: Put example data bases into the working directory
 *   electrical_power_consumption.caf
 *   oil_consumption.caf
 *   water_consumption.caf
+
+**Required python version** 2.7 (3.x does not work!)
              
 **Required python modules:**
 
@@ -31,16 +32,20 @@ optparse, sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, 
 
 ** Tested operating systems: **
 
-Kubuntu 14.04, Kubuntu 16.04
+Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04
 
 # Supported statistical analyses:
 
 
-*  average consumption per day (in command line)
+*  average consumption per day (in command line)  
 *  time chart of consumption with linear regression (matplotlib chart)
+![pic](Images/linear_regression_analysis.png)
 *  time chart of average consumption between sampling points  (matplotlib chart)
+![pic](Images/average_of_consumption.png)
 *  time chart of 365 days moving average of consumption  (matplotlib chart)
+![pic](Images/365_days_moving_average.png)
 *  time chart of delta of 1 year moving average of consumption  (matplotlib chart)
+![pic](Images/delta_to_consumption_one_year_ago.png)
 
 
 # Usage:
