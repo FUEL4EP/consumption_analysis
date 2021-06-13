@@ -78,7 +78,7 @@ def check_float(string):
 def input_float(string):
     done=False
     while not done:
-        input=raw_input(string)
-        done=check_float(input)
-    fp=float(input)
+        myinput=input(string)
+        done=check_float(myinput)
+    fp=float(myinput)
     return fp

@@ -24,7 +24,7 @@ Optional: Put example data bases into the working directory
 *   oil_consumption.caf
 *   water_consumption.caf
 
-**Required python version** 2.7 (3.x does not work!)
+**Required python version** 3.x
              
 **Required python modules:**
 
@@ -140,6 +140,10 @@ Options:
 
 
 # Enjoy and have fun!
+
+# Update history:
+
+-   13th June 2021: Migration to python3
 
 
 

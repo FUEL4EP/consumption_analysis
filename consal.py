@@ -1,14 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
 
-# $Rev: 66 $:
+# $Rev: 70 $:
 # $Author: ewald $:
-# $Date: 2017-04-17 12:01:04 +0200 (Mo, 17. Apr 2017) $:
-# $Id: consal.py 66 2017-04-17 10:01:04Z ewald $
+# $Date: 2021-06-13 13:35:02 +0200 (So, 13. Jun 2021) $:
+# $Id: consal.py 70 2021-06-13 11:35:02Z ewald $
 
-__my_version__ = "$Revision: 66 $"
+__my_version__ = "$Revision: 70 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -171,16 +171,16 @@ class consumption(object):
                 if isinstance(el, float) and isinstance(last_row[j], float)  and self.table.strictly_increasing_check_mask[j]:
                     if last_row[j] >= el:
                         if j == 0:
-                            print '\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n' % (el,  last_row[j])
+                            print ("\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
                         if j == 1:
-                            print '\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n' % (el,  last_row[j])
+                            print ("\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
                         return False
                     else:
                         if j==1:
                             actual_slope=(el-last_row[j])/(vec[0]-last_row[0])
-                            print '\nActual \'%s\' per day: \'%.3f\'\n' % (self.name, actual_slope)
+                            print ("\nActual \'%s\' per day: \'%.3f\'\n" % (self.name, actual_slope))
                             if actual_slope > MAX_MEASUREMENT_VARIATION*slope:
-                                print '\nWrong input: Actual measurement slope \'%.3f\' is more than \'x%s\' bigger than average slope \'%.3f\'\n' % (actual_slope,  MAX_MEASUREMENT_VARIATION,  slope)
+                                print ("\nWrong input: Actual measurement slope \'%.3f\' is more than \'x%s\' bigger than average slope \'%.3f\'\n" % (actual_slope,  MAX_MEASUREMENT_VARIATION,  slope))
                                 return False
             return True
         else:
@@ -192,7 +192,7 @@ class consumption(object):
             if not self.newDB_flag:
                 self.check_strictly_increasing_new_row(frow)
                 if len(frow) != self.table.dx:
-                    rrMsg("Dimension do not match:\nRequired: %d Actual: %d\n" % ( self.table.dx, len(frow)))
+                    errMsg("Dimension do not match:\nRequired: %d Actual: %d\n" % ( self.table.dx, len(frow)))
                     self.status=False
             if self.status:
                 self.table.add_row(frow)
@@ -252,7 +252,7 @@ class consumption(object):
         max_ti=numpy.trunc(max_t)*RESAMPLE_TIME_STEP
         number_of_samples=numpy.rint((max_ti-min_ti)/RESAMPLE_TIME_STEP+1+EPSILON)
         #print number_of_samples
-        self.edta=numpy.linspace(min_ti, max_ti, number_of_samples)
+        self.edta=numpy.linspace(min_ti, max_ti, int(number_of_samples))
         #print self.edta
         #scipy.interpolate.splrep: Find the B-spline representation of 1-D curve.
         rep = scipy.interpolate.splrep(self.ta,self.ca, k=1)
@@ -301,7 +301,7 @@ class consumption(object):
                     self.status=False
         if self.status != False:
             # determine local time for the local timezone
-            t1     = datetime.datetime(1970, 01, 01, 0, 0, 0)   # 1970-01-01 00:0:0
+            t1     = datetime.datetime(1970, 1, 1, 0, 0, 0)   # 1970-01-01 00:0:0
             tl      = datetime.datetime.now()
             tnow=(time.mktime(tl.timetuple())-time.mktime(t1.timetuple()))/24/3600
             done = False
@@ -512,10 +512,10 @@ class float_table(object):
         return self.array[0]
 
     def print_table(self):
-        print '\nArray:\n'
-        print self.array
-        print '\nList:\n'
-        print self.list
+        print ("\nArray:\n")
+        print ( self.array )
+        print ("\nList:\n")
+        print ( self.list )
 
 
 
@@ -530,6 +530,9 @@ def main():
 
     parser.add_option('--nc', help='no consistency check',
         dest='no_consistency_check', action='store_true')
+        
+    parser.add_option('--ng', help='no check for greater than entries',
+        dest='no_greater_than_check', action='store_true')
         
     parser.add_option("-n", help="create a new data base", dest="newDB",
         action='store_true')
@@ -564,7 +567,7 @@ def main():
         help="file storing data base for water consumption analysis",
         metavar="FILE",dest="file_water")
 
-    parser.set_defaults(verbose=0,  no_consistency_check=False, newDB=False, 
+    parser.set_defaults(verbose=0,  no_consistency_check=False, no_greater_than_check=False, newDB=False, 
         wdir=WORKING_DIR, epower=False,
         file_epower=ELECTRICAL_POWER_CONSUMPTION_FILE, oil=False,
         file_oil=OIL_CONSUMPTION_FILE, water=False,

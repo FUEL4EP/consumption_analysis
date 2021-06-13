@@ -7,15 +7,15 @@
 #source:
 #http://code.activestate.com/recipes/144838-include-function-name-and-line-number-automaticall/
 
-# $Rev: 61 $:  
+# $Rev: 71 $:  
 # $Author: ewald $:  
-# $Date: 2017-04-02 13:06:08 +0200 (So, 02. Apr 2017) $:
-# $Id: messaging.py 61 2017-04-02 11:06:08Z ewald $ 
+# $Date: 2021-06-13 13:36:31 +0200 (So, 13. Jun 2021) $:
+# $Id: messaging.py 71 2021-06-13 11:36:31Z ewald $ 
 
-__version__ = "$Revision: 61 $"
+__version__ = "$Revision: 71 $"
 
 
-import sys, string, exceptions
+import sys, string, builtins
 
 #this flag determines whether debug output is sent to debug handlers themselves
 debug = 1
@@ -25,13 +25,13 @@ def setDebugging(debugging):
     debug = debugging
     #print "resetted debug %d %d:" % (debug,  debugging)
 
-class MessagingException(exceptions.Exception):
+class MessagingException(builtins.Exception):
     """an exception class for any errors that may occur in 
     a messaging function"""
     def __init__(self, args=None):
         self.args = args
 
-class FakeException(exceptions.Exception):
+class FakeException(builtins.Exception):
     """an exception that is thrown and then caught
     to get a reference to the current execution frame"""
     pass        
@@ -73,7 +73,7 @@ def registerMessageHandler(handler):
         try:
             getattr(handler, methodName)
         except:            
-            raise MessagingException, "The class " + handler.__class__.__name__ + " is missing a " + methodName + " method"
+            raise MessagingException ( "The class " + handler.__class__.__name__ + " is missing a " + methodName + " method" )
     _messageHandlers.append(handler)
     
     
@@ -83,7 +83,7 @@ def getCallString(level):
     #ways starting in 2.1
     try:
         raise FakeException("this is fake")
-    except Exception, e:
+    except Exception( e ):
         #get the current execution frame
         f = sys.exc_info()[2].tb_frame
     #go back as many call-frames as was specified
@@ -102,19 +102,19 @@ def getCallString(level):
     
 #send this message to all handlers of std messages
 def stdMsg(*args):
-    stdStr = string.join(map(str, args), " ")
+    stdStr = " ".join(map(str, args))
     for handler in _messageHandlers:
         handler.handleStdMsg(stdStr)
 
 #send this message to all handlers of error messages
 def errMsg(*args):
-    errStr = "Error in "+getCallString(1)+" : "+string.join(map(str, args), " ")
+    errStr = "Error in "+getCallString(1)+" : "+" ".join(map(str, args))
     for handler in _messageHandlers:
         handler.handleErrMsg(errStr)
         
 #send this message to all handlers of warning messages
 def warnMsg(*args):
-    warnStr = "Warning in "+getCallString(1)+" : "+string.join(map(str, args), " ")
+    warnStr = "Warning in "+getCallString(1)+" : "+" ".join(map(str, args))
     for handler in _messageHandlers:
         handler.handleErrMsg(warnStr)
 
@@ -122,7 +122,7 @@ def warnMsg(*args):
 def dbgMsg(*args):
     if not debug:
         return
-    errStr = getCallString(1)+" : "+string.join(map(str, args), " ")
+    errStr = getCallString(1)+" : "+" ".join(map(str, args))
     for handler in _messageHandlers:
         handler.handleDbgMsg(errStr)
 

@@ -1,12 +1,12 @@
 #graphics.py
 # -*- coding: utf-8 -*-
 
-# $Rev: 61 $:  
+# $Rev: 72 $:  
 # $Author: ewald $:  
-# $Date: 2017-04-02 13:06:08 +0200 (So, 02. Apr 2017) $:
-# $Id: graphics.py 61 2017-04-02 11:06:08Z ewald $ 
+# $Date: 2021-06-13 13:36:51 +0200 (So, 13. Jun 2021) $:
+# $Id: graphics.py 72 2021-06-13 11:36:51Z ewald $ 
 
-__version__ = "$Revision: 61 $"
+__version__ = "$Revision: 72 $"
 
 import pylab
 from pylab import  plt, DateFormatter,  getp, setp
@@ -77,7 +77,7 @@ def check_add_graphs(args):
         errMsg( 'Wrong number of arguments (not multiple of 3): %d\nExiting because of a fatal error!\n' % len(args))
         errMsg('\nPassed arguments were:\n')
         for i in args: 
-            print i
+            print ( i )
         sys.exit(1)
     #check dimensions of arrays
     for j in range(0, len(args), 3):
