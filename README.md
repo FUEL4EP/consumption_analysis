@@ -28,7 +28,7 @@ Optional: Put example data bases into the working directory
              
 **Required python modules:**
 
-optparse, sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, exceptions
+optparse, sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, builtins
 
 ** Tested operating systems: **
 
