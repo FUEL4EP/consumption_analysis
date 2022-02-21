@@ -37,7 +37,8 @@ Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04
 # Supported statistical analyses:
 
 
-*  average consumption per day (in command line)  
+*  average consumption per day (in command line)
+*  please close the pop-up matplotlib charts for proceeding to the next chart (click to 'x' in upper right corner)
 *  time chart of consumption with linear regression (matplotlib chart)
 ![pic](Images/linear_regression_analysis.png)
 *  time chart of average consumption between sampling points  (matplotlib chart)
