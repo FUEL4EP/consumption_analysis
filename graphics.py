@@ -1,12 +1,12 @@
 #graphics.py
 # -*- coding: utf-8 -*-
 
-# $Rev: 72 $:  
+# $Rev: 74 $:  
 # $Author: ewald $:  
-# $Date: 2021-06-13 13:36:51 +0200 (So, 13. Jun 2021) $:
-# $Id: graphics.py 72 2021-06-13 11:36:51Z ewald $ 
+# $Date: 2022-10-23 15:44:59 +0200 (So, 23. Okt 2022) $:
+# $Id: graphics.py 74 2022-10-23 13:44:59Z ewald $ 
 
-__version__ = "$Revision: 72 $"
+__version__ = "$Revision: 74 $"
 
 import pylab
 from pylab import  plt, DateFormatter,  getp, setp
@@ -99,7 +99,7 @@ def my_2D_plot_of_arrays(xa, ya, title, xlabel, ylabel,  *add_graphs):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     
-    lines=ax.plot(xa, ya, 'b-o',  markersize=2, color="green")
+    lines=ax.plot(xa, ya, 'b-o',  markersize=2)
 
     line = lines[0]
     
