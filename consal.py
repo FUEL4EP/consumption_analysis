@@ -3,12 +3,12 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
 
-# $Rev: 70 $:
+# $Rev: 75 $:
 # $Author: ewald $:
-# $Date: 2021-06-13 13:35:02 +0200 (So, 13. Jun 2021) $:
-# $Id: consal.py 70 2021-06-13 11:35:02Z ewald $
+# $Date: 2022-10-28 12:14:14 +0200 (Fr, 28. Okt 2022) $:
+# $Id: consal.py 75 2022-10-28 10:14:14Z ewald $
 
-__my_version__ = "$Revision: 70 $"
+__my_version__ = "$Revision: 75 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -232,7 +232,10 @@ class consumption(object):
     def xmgrace_time_to_AD_time (self, xmgrace_time_table):
         #please notice the offset of one of matplotlib.dates !
         #see e.g. http://matplotlib.org/api/dates_api.html
-        offset_1970=datetime.datetime(1970, 1, 1, 1, 0, 0)-datetime.datetime(1, 1, 1, 1, 0, 0)
+        #offset_1970=datetime.datetime(1970, 1, 1, 1, 0, 0) - datetime.datetime(1, 1, 1, 1, 0, 0)
+        #chamge for matplotlib >= 3.3
+        offset_1970=datetime.datetime(1, 1, 1, 1, 0, 0) - datetime.datetime(1, 1, 1, 1, 0, 0)
+
         AD_time_table=xmgrace_time_table+offset_1970.days+1
         return AD_time_table
 

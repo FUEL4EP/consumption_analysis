@@ -32,7 +32,7 @@ optparse, sys, os, numpy, scipy, time, datetime, pylab, matplotlib, re, string, 
 
 ** Tested operating systems: **
 
-Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04
+Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04, Kubuntu 22.04
 
 # Supported statistical analyses:
 
@@ -144,7 +144,8 @@ Options:
 
 # Update history:
 
--   13th June 2021: Migration to python3
+-   13th June 2021: Migration to python3  
+-   28th October 2022: Fixes due to library updates, update of images
 
 
 

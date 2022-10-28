@@ -7,12 +7,12 @@
 #source:
 #http://code.activestate.com/recipes/144838-include-function-name-and-line-number-automaticall/
 
-# $Rev: 71 $:  
+# $Rev: 76 $:  
 # $Author: ewald $:  
-# $Date: 2021-06-13 13:36:31 +0200 (So, 13. Jun 2021) $:
-# $Id: messaging.py 71 2021-06-13 11:36:31Z ewald $ 
+# $Date: 2022-10-28 12:14:34 +0200 (Fr, 28. Okt 2022) $:
+# $Id: messaging.py 76 2022-10-28 10:14:34Z ewald $ 
 
-__version__ = "$Revision: 71 $"
+__version__ = "$Revision: 76 $"
 
 
 import sys, string, builtins
@@ -83,7 +83,7 @@ def getCallString(level):
     #ways starting in 2.1
     try:
         raise FakeException("this is fake")
-    except Exception( e ):
+    except Exception as  e :
         #get the current execution frame
         f = sys.exc_info()[2].tb_frame
     #go back as many call-frames as was specified
