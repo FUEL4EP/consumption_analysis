@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-desc="""consal.py is doing a statistical analysis of electrical power,  water, and oil consumptions"""
+desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, and heat pump consumptions"""
 
-# $Rev: 75 $:
+# $Rev: 78 $:
 # $Author: ewald $:
-# $Date: 2022-10-28 12:14:14 +0200 (Fr, 28. Okt 2022) $:
-# $Id: consal.py 75 2022-10-28 10:14:14Z ewald $
+# $Date: 2022-11-21 14:31:33 +0100 (Mo, 21. Nov 2022) $:
+# $Id: consal.py 78 2022-11-21 13:31:33Z ewald $
 
-__my_version__ = "$Revision: 75 $"
+__my_version__ = "$Revision: 78 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
 OIL_CONSUMPTION_FILE ="oil_consumption.caf"
+GAS_CONSUMPTION_FILE ="gas_energy_consumption.caf"
+PELLETS_CONSUMPTION_FILE ="pellets_energy_consumption.caf"
+HEAT_PUMP_CONSUMPTION_FILE ="heat_pump_energy_consumption.caf"
 TIME_COL=0
 VALUE_COL= 1
 STRICTLY_INCREASING=1
@@ -569,12 +572,36 @@ def main():
     parser.add_option("--wf", type="string",
         help="file storing data base for water consumption analysis",
         metavar="FILE",dest="file_water")
+        
+    parser.add_option("-g", help="analyze gas consumption", dest="gas",
+        action='store_true')
+
+    parser.add_option("--wg", type="string",
+        help="file storing data base for gas consumption analysis",
+        metavar="FILE",dest="file_gas")
+
+    parser.add_option("-p", help="analyze pellets consumption", dest="pellets",
+        action='store_true')
+
+    parser.add_option("--wp", type="string",
+        help="file storing data base for pellets consumption analysis",
+        metavar="FILE",dest="file_pellets")
+        
+    parser.add_option("--hp", help="analyze heat pump energy consumption", dest="heat_pump",
+        action='store_true')
+
+    parser.add_option("--whp", type="string",
+        help="file storing data base for heat pump energy consumption analysis",
+        metavar="FILE",dest="file_heat_pump")
 
     parser.set_defaults(verbose=0,  no_consistency_check=False, no_greater_than_check=False, newDB=False, 
         wdir=WORKING_DIR, epower=False,
         file_epower=ELECTRICAL_POWER_CONSUMPTION_FILE, oil=False,
         file_oil=OIL_CONSUMPTION_FILE, water=False,
-        file_water=WATER_CONSUMPTION_FILE,  version=False, input_flag=False)
+        file_water=WATER_CONSUMPTION_FILE,  gas=False, 
+        file_gas=GAS_CONSUMPTION_FILE,  pellets=False, 
+        file_pellets=PELLETS_CONSUMPTION_FILE,  heat_pump=False, 
+        file_heat_pump=HEAT_PUMP_CONSUMPTION_FILE,  version=False, input_flag=False)
 
     (options, args) = parser.parse_args()
 
@@ -623,8 +650,45 @@ def main():
         #run analysis
         water.consumption_analysis('water consumption', options.wdir,
             options.file_water,  'fresh water [m^3]', not(options.no_consistency_check),options.input_flag,options.newDB )
+            
+    #analyze gas consumption
+    if options.gas:
+        stdMsg("\n\nStarting analysis of gas energy consumption ..\n")
+        #check if data base file is existing and readable
+        check_database_file(options.wdir,  options.file_gas, options.newDB)
+        #initialize data analysis
+        gas=consumption()
+        #run analysis
+        gas.consumption_analysis('gas energy consumption',
+            options.wdir, options.file_gas,  'gas energy [kWh]',
+            not(options.no_consistency_check), options.input_flag, options.newDB)
+            
+    #analyze pellets consumption
+    if options.pellets:
+        stdMsg("\n\nStarting analysis of pellets energy consumption ..\n")
+        #check if data base file is existing and readable
+        check_database_file(options.wdir,  options.file_pellets, options.newDB)
+        #initialize data analysis
+        pellets=consumption()
+        #run analysis
+        pellets.consumption_analysis('pellets energy consumption',
+            options.wdir, options.file_pellets,  'pellets energy [kWh]',
+            not(options.no_consistency_check), options.input_flag, options.newDB)
+            
+  #analyze heat pump energy consumption
+    if options.heat_pump:
+        stdMsg("\n\nStarting analysis of heat pump energy consumption ..\n")
+        #check if data base file is existing and readable
+        check_database_file(options.wdir,  options.file_heat_pump, options.newDB)
+        #initialize data analysis
+        heat_pump=consumption()
+        #run analysis
+        heat_pump.consumption_analysis('heat pump energy consumption',
+            options.wdir, options.file_heat_pump,  'heat pump energy [kWh]',
+            not(options.no_consistency_check), options.input_flag, options.newDB)
 
-    if not options.epower and not options.oil and not options.water:
+
+    if not options.epower and not options.oil and not options.water and not options.gas and not options.pellets and not options.heat_pump:
         stdMsg("\n\nNo analysis has been selected!")
 
     stdMsg("\nFinished\n")
