@@ -3,12 +3,12 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, and heat pump consumptions"""
 
-# $Rev: 78 $:
+# $Rev: 79 $:
 # $Author: ewald $:
-# $Date: 2022-11-21 14:31:33 +0100 (Mo, 21. Nov 2022) $:
-# $Id: consal.py 78 2022-11-21 13:31:33Z ewald $
+# $Date: 2022-12-03 09:45:53 +0100 (Sa, 03. Dez 2022) $:
+# $Id: consal.py 79 2022-12-03 08:45:53Z ewald $
 
-__my_version__ = "$Revision: 78 $"
+__my_version__ = "$Revision: 79 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -281,22 +281,26 @@ class consumption(object):
             #print len(self.edmata)
             #print len(self.edmaca)
             graphics.my_2D_plot_of_arrays(self.edmata,  self.edmaca,  title, xlabel,  ylabel)
+            return 1
+        else:
+            return 0
 
-    def delta_moving_average(self, scale, title, xlabel, ylabel):
-        if len(self.edmata) > 1:
-            i=0
-            j=1
-            imax=len(self.edmata)
-            self.dedmata=numpy.copy(self.edmata[1:])
-            self.dedmaca=[]
-            while j < imax:
-                #print imax, i, j
-                self.dedmaca.append((self.edmaca[j]-self.edmaca[i])*scale)
-                i = i + 1
-                j = j + 1
-            #print len(self.dedmata)
-            #print len(self.dedmaca)
-            graphics.my_2D_plot_of_arrays(self.dedmata,  self.dedmaca,  title, xlabel,  ylabel)
+    def delta_moving_average(self, scale, title, xlabel, ylabel, dmad_flag):
+        if ( dmad_flag ):
+            if len(self.edmata) > 1:
+                i=0
+                j=1
+                imax=len(self.edmata)
+                self.dedmata=numpy.copy(self.edmata[1:])
+                self.dedmaca=[]
+                while j < imax:
+                    #print imax, i, j
+                    self.dedmaca.append((self.edmaca[j]-self.edmaca[i])*scale)
+                    i = i + 1
+                    j = j + 1
+                #print len(self.dedmata)
+                #print len(self.dedmaca)
+                graphics.my_2D_plot_of_arrays(self.dedmata,  self.dedmaca,  title, xlabel,  ylabel)
 
     def input_measurement(self, consistency_check_on):
         
@@ -354,8 +358,8 @@ class consumption(object):
             #my_2D_plot_of_arrays(self.ta[1:],  avg_a,  'average of '+name,  'time [year]',  ylabel)
             self.interpolate_at_equidistant_time_steps()
             self.moving_average(1, 1/RESAMPLE_TIME_STEP, 'average of '+name,  'time [year]',  ylabel)
-            self.moving_average(MOVING_AVERAGE_DAYS/RESAMPLE_TIME_STEP, 1, '365 days moving average of '+name,  'time [year]',  ylabel)
-            self.delta_moving_average(1/RESAMPLE_TIME_STEP, 'delta of 1 year moving average of '+name,  'time [year]',  ylabel)
+            dmad_flag = self.moving_average(MOVING_AVERAGE_DAYS/RESAMPLE_TIME_STEP, 1, '365 days moving average of '+name,  'time [year]',  ylabel)
+            self.delta_moving_average(1/RESAMPLE_TIME_STEP, 'delta of 1 year moving average of '+name,  'time [year]',  ylabel, dmad_flag)
 
 
 class float_table(object):
