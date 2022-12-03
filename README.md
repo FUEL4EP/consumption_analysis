@@ -2,10 +2,10 @@
 
 Python statistic software for consumption analysis of electrical power, fresh water, oil, gas, pellets, and heat pump energy
 
-# Installation for [(K)ubuntu] LINUX:
+# Installation for [(K)ubuntu] LINUX / Raspian OS:
 
 
-1.  Put all python source code files of this github repository into a working directory
+1.  Put all python source code files of this github repository into a working directory, e.g. download and unpack the latest release  [consumption_analysis.tgz ](https://github.com/FUEL4EP/consumption_analysis/releases/latest)
 2.  Make consal.py executable: 'chmod +x consal.py'
 
 `<working_dir>/..`
@@ -36,7 +36,8 @@ Optional: Put example data bases into the working directory
 
 **Tested operating systems:**
 
-- Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04, Kubuntu 22.04
+- Kubuntu 14.04, Kubuntu 16.04, Kubuntu 18.04, Kubuntu 22.04  
+- Raspian GNU/LINUX 11 (bullseye)
 
 **Other operating systems:**
 
