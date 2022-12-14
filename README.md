@@ -55,7 +55,7 @@ Optional: Put example data bases into the working directory
 ![pic](Images/average_of_consumption.png)
 *  time chart of 365 days moving average of consumption  (matplotlib chart)
 ![pic](Images/365_days_moving_average.png)
-*  time chart of delta of 1 year moving average of consumption  (matplotlib chart)
+*  time chart of delta of 1 year moving average of consumption  (matplotlib chart) thus compensating seasonal effects. Such, the savings or the increases of a consumption are more easily visible.
 ![pic](Images/delta_to_consumption_one_year_ago.png)
 
 # Important note for moving averages
