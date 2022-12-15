@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, and heat pump consumptions"""
+desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, heat pump, and firewood consumptions"""
 
-# $Rev: 79 $:
+# $Rev: 81 $:
 # $Author: ewald $:
-# $Date: 2022-12-03 09:45:53 +0100 (Sa, 03. Dez 2022) $:
-# $Id: consal.py 79 2022-12-03 08:45:53Z ewald $
+# $Date: 2022-12-15 13:06:52 +0100 (Do, 15. Dez 2022) $:
+# $Id: consal.py 81 2022-12-15 12:06:52Z ewald $
 
-__my_version__ = "$Revision: 79 $"
+__my_version__ = "$Revision: 81 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -16,15 +16,17 @@ OIL_CONSUMPTION_FILE ="oil_consumption.caf"
 GAS_CONSUMPTION_FILE ="gas_energy_consumption.caf"
 PELLETS_CONSUMPTION_FILE ="pellets_energy_consumption.caf"
 HEAT_PUMP_CONSUMPTION_FILE ="heat_pump_energy_consumption.caf"
+FIREWOOD_CONSUMPTION_FILE ="firewood_mass_consumption.caf"
 TIME_COL=0
 VALUE_COL= 1
 STRICTLY_INCREASING=1
 NOT_STRICTLY_INCREASING=0
 MOVING_AVERAGE_DAYS=365
-RESAMPLE_TIME_STEP=0.25
+RESAMPLE_TIME_STEP=0.125    # resample every 3 hours
 EPSILON=1e-6
 ALPHA=1e-2
 MAX_MEASUREMENT_VARIATION=4
+MAX_FIREWOOD_CHARGE=15.0                                 # adapt this parameter to the maximum allowed charge of your stove
 
 import sys
 import optparse
@@ -62,6 +64,7 @@ class consumption(object):
         self.write_table_name=''
         self.table=[]
         self.np=0
+        self.increment_flag=False
         #list
         self.tl=[]
         self.cl=[]
@@ -85,6 +88,14 @@ class consumption(object):
         self.newDB_flag=False
         #status flag
         self.status=True
+
+    def set_increment_flag(self, name):
+        # set the increment_flag for firewood mass consumption, i.e. each charge of an oven shall be weighted
+        if ( name == "firewood mass consumption" ):
+          self.increment_flag = True
+          #print ("firewood increment_flag is set")
+        else:
+          self.increment_flag = False
 
     def set_name(self, name):
         self.name = name
@@ -165,29 +176,59 @@ class consumption(object):
 
     def check_measurement_input(self, vec):
         if self.status  != False:
-            last_row=self.table.last_row()
-            first_row=self.table.first_row()
-            #bisheriger Durchschnittsverbrauch pro Tag
-            slope=(last_row[1]-first_row[1])/(last_row[0]-first_row[0])
-            for j, el in enumerate(vec):
-                #print j, el
-                if isinstance(el, float) and isinstance(last_row[j], float)  and self.table.strictly_increasing_check_mask[j]:
-                    if last_row[j] >= el:
-                        if j == 0:
-                            print ("\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
-                        if j == 1:
-                            print ("\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
-                        return False
-                    else:
-                        if j==1:
-                            actual_slope=(el-last_row[j])/(vec[0]-last_row[0])
-                            print ("\nActual \'%s\' per day: \'%.3f\'\n" % (self.name, actual_slope))
-                            if actual_slope > MAX_MEASUREMENT_VARIATION*slope:
-                                print ("\nWrong input: Actual measurement slope \'%.3f\' is more than \'x%s\' bigger than average slope \'%.3f\'\n" % (actual_slope,  MAX_MEASUREMENT_VARIATION,  slope))
+            if self.increment_flag == False:
+                # check input from a meter
+                last_row=self.table.last_row()
+                first_row=self.table.first_row()
+                #bisheriger Durchschnittsverbrauch pro Tag
+                slope=(last_row[1]-first_row[1])/(last_row[0]-first_row[0])
+                for j, el in enumerate(vec):
+                    #print ( j, el )
+                    if isinstance(el, float) and isinstance(last_row[j], float)  and self.table.strictly_increasing_check_mask[j]:
+                        if last_row[j] >= el:
+                            if j == 0:
+                                print ("\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
+                            if j == 1:
+                                print ("\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
+                            return False
+                        else:
+                            if j==1:
+                                actual_slope=(el-last_row[j])/(vec[0]-last_row[0])
+                                print ("\nActual \'%s\' per day: \'%.3f\'\n" % (self.name, actual_slope))
+                                if actual_slope > MAX_MEASUREMENT_VARIATION*slope:
+                                    print ("\nWrong input: Actual measurement slope \'%.3f\' is more than \'x%s\' bigger than average slope \'%.3f\'\n" % (actual_slope,  MAX_MEASUREMENT_VARIATION,  slope))
+                                    return False
+            else:
+                # check firewood charge input
+                last_row=self.table.last_row()
+                for j, el in enumerate(vec):
+                    #print ( j, el )
+                    if isinstance(el, float) and isinstance(last_row[j], float):
+                        if last_row[j] >= el:
+                            if j == 0:
+                                print ("\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
                                 return False
+                        if el <= 0:
+                            if j == 1:
+                                print ("\nWrong input: Actual charge \'%.3f\' must be positive" % el)
+                                return False
+                        else:
+                            if j==1:
+                                if (el > MAX_FIREWOOD_CHARGE ):
+                                    print ("\nWrong input: Actual charge \'%.3f\' is exceeding the maximum charge of \'%.1f\' of the stove (see define MAX_FIREWOOD_CHARGE)" % (el, MAX_FIREWOOD_CHARGE) )
+                                    return False
             return True
         else:
             return False
+        
+    def accumulate_charge_in_increment_mode(self, input_value):
+        if self.status  != False:
+            if self.increment_flag == True:
+                if not self.newDB_flag:
+                    last_row=self.table.last_row() 
+                    #print ( last_row )
+                    input_value = input_value + last_row[1]
+        return input_value
 
     def add_row(self, row):
         if self.status != False:
@@ -311,20 +352,24 @@ class consumption(object):
                     self.status=False
         if self.status != False:
             # determine local time for the local timezone
-            t1     = datetime.datetime(1970, 1, 1, 0, 0, 0)   # 1970-01-01 00:0:0
+            t1      = datetime.datetime(1970, 1, 1, 0, 0, 0)   # 1970-01-01 00:0:0
             tl      = datetime.datetime.now()
             tnow=(time.mktime(tl.timetuple())-time.mktime(t1.timetuple()))/24/3600
             done = False
             while not done:
                 fp=input_float('Please input actual measurement of \'%s\'\n\n' % self.name)
                 if self.newDB_flag:
-                    done  = True
+                    done = True
                 else:
                     done = self.check_measurement_input([tnow, fp])
+            # accumulate firewood charge of stove to last firewood consumption value, i.e. increment_flag == True
+            #print ( fp )
+            fp = self.accumulate_charge_in_increment_mode(fp)
+            #print (fp )
             if self.newDB_flag:
-                tlminus1 = tl - datetime.timedelta(seconds=1)
-                tnowminus1=(time.mktime(tlminus1.timetuple())-time.mktime(t1.timetuple()))/24/3600
-                self.add_row( [tnowminus1, fp-ALPHA])
+                tlminus60 = tl - datetime.timedelta(seconds=60) #add an artificial table entry for the first entry, timesamp is 60 seconds earlier
+                tnowminus60=(time.mktime(tlminus60.timetuple())-time.mktime(t1.timetuple()))/24/3600
+                self.add_row( [tnowminus60, fp-ALPHA])
                 self.add_row( [tnow, fp])
             else:
                 self.add_row( [tnow, fp])
@@ -334,6 +379,7 @@ class consumption(object):
     def consumption_analysis(self,  name,  working_dir,  input_file,  ylabel,
             consistency_check_on, input_flag, newDB_flag):
         self.set_name(name)
+        self.set_increment_flag(name)
         self.set_working_dir(working_dir)
         self.set_table_name(input_file)
         self.set_newDB_flag(newDB_flag)
@@ -597,6 +643,13 @@ def main():
     parser.add_option("--whp", type="string",
         help="file storing data base for heat pump energy consumption analysis",
         metavar="FILE",dest="file_heat_pump")
+    
+    parser.add_option("-f", help="analyze firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted)", dest="firewood",
+        action='store_true')
+
+    parser.add_option("--ff", type="string",
+        help="file storing data base for firewood mass consumption analysis",
+        metavar="FILE",dest="file_firewood")
 
     parser.set_defaults(verbose=0,  no_consistency_check=False, no_greater_than_check=False, newDB=False, 
         wdir=WORKING_DIR, epower=False,
@@ -605,7 +658,8 @@ def main():
         file_water=WATER_CONSUMPTION_FILE,  gas=False, 
         file_gas=GAS_CONSUMPTION_FILE,  pellets=False, 
         file_pellets=PELLETS_CONSUMPTION_FILE,  heat_pump=False, 
-        file_heat_pump=HEAT_PUMP_CONSUMPTION_FILE,  version=False, input_flag=False)
+        file_heat_pump=HEAT_PUMP_CONSUMPTION_FILE,  firewood=False,
+        file_firewood=FIREWOOD_CONSUMPTION_FILE,  version=False, input_flag=False)
 
     (options, args) = parser.parse_args()
 
@@ -679,7 +733,7 @@ def main():
             options.wdir, options.file_pellets,  'pellets energy [kWh]',
             not(options.no_consistency_check), options.input_flag, options.newDB)
             
-  #analyze heat pump energy consumption
+    #analyze heat pump energy consumption
     if options.heat_pump:
         stdMsg("\n\nStarting analysis of heat pump energy consumption ..\n")
         #check if data base file is existing and readable
@@ -689,6 +743,18 @@ def main():
         #run analysis
         heat_pump.consumption_analysis('heat pump energy consumption',
             options.wdir, options.file_heat_pump,  'heat pump energy [kWh]',
+            not(options.no_consistency_check), options.input_flag, options.newDB)
+        
+    #analyze firewood mass consumption
+    if options.firewood:
+        stdMsg("\n\nStarting analysis of firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted) ..\n")
+        #check if data base file is existing and readable
+        check_database_file(options.wdir,  options.file_firewood, options.newDB)
+        #initialize data analysis
+        firewood=consumption()
+        #run analysis
+        firewood.consumption_analysis('firewood mass consumption',
+            options.wdir, options.file_firewood,  'firewood mass [kg]',
             not(options.no_consistency_check), options.input_flag, options.newDB)
 
 

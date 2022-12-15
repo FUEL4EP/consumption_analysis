@@ -1,6 +1,6 @@
 # consumption_analysis [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FFUEL4EP%2Fconsumption_analysis&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) <a href='https://ko-fi.com/FUEL4EP' target='_blank'><img height='20' style='border:0px;height:20px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-Python statistic software for consumption analysis of electrical power, fresh water, oil, gas, pellets, and heat pump energy
+Python statistic software for consumption analysis of electrical power, fresh water, oil, gas, pellets, heat pump energy, and firewood
 
 # Installation for [(K)ubuntu] LINUX / Raspian OS:
 
@@ -26,9 +26,11 @@ Optional: Put example data bases into the working directory
 *   gas_energy_consumption.caf
 *   pellets_energy_consumption.caf
 *   heat_pump_energy_consumption.caf
+*   firewood_mass_consumption.caf
 
 **Required python version**
 - 3.x
+- python2 is **NOT** supported anymore
              
 **Required python modules:**
 
@@ -62,6 +64,14 @@ Optional: Put example data bases into the working directory
 
 * moving averages over one year will be calculated after at least one year of data collection
 * therefore **for the first year** of data entries, no moving averages will be calculated nor displayed
+
+# Hints for consumption inputs
+
+- The readings of a consumption meter should be inputted into the 'consal' software immediately after reading. The concerning time stamp of the data base is taken based on the system time of your computer at the time of the input.
+- The readings can be done at any time. They can be non-equidistant in time.
+- The time span between two readings can vary arbitrarily, e.g. after 1 hour, then after 3.2 days, then after 1.34 weeks, then after 5.6 hours, ..
+- For creating the graphical views, the data base vectors <time of reading, readout value> are resampled equidistantly in time, in the current software version  every 3 hours.
+- In case of a newly created data base, the next data base input should be done after the resampling time at the earliest, i.e. after 3 hours.
 
 
 # Usage:
@@ -115,7 +125,22 @@ Options:
      --hp              analyze heat pump consumption
      
      --whp=FILE        file storing data base for heat pump consumption analysis
+     -f                analyze firewood mass consumption of a stove (note: mass
+                       of each oven charge needs to be inputted)
+                       
+    --ff=FILE          file storing data base for firewood mass consumption
+                       analysis                     
+                       
 
+# Input modes
+
+1. Input of meter readings
+    - For water, electricity, gas, oil, heat pump energy, pellets energy
+    - The inputted consumption values are already summed-up by the meter 
+2. Input of non-meter readings, e.g. firewood charge of a stove
+    - For firewood charge of a stove
+    - The inputted consumption values are not summed-up by a meter, but **each** furnance charge is weigthed by a scale. The summing-up is done by the 'consal' software instead.
+    - **IMPORTANT**: For summing-up the firewood mass consumption correctly, **each furnance charge needs to be weigthed and the firewood weight needs to be inputted with 'consal -f -i', see also below.**
 
 # Examples on usage:
 
@@ -153,60 +178,74 @@ Options:
 
 
 	consal --hp
+	
+7. Run analysis on provided data base for firewood mass consumption:
 
-7. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption:
+
+	consal -f
+
+8. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption:
 
 	consal -i -e
 
-8. Add a new consumption value to an existing data base and then run an analysis of water consumption:
+9. Add a new consumption value to an existing data base and then run an analysis of water consumption:
 
 	consal -i -w
 
 
-9. Add a new consumption value to an existing data base and then run an analysis of heating oil consumption:
+10. Add a new consumption value to an existing data base and then run an analysis of heating oil consumption:
 
 
 	consal -i -o
 	
-10. Add a new consumption value to an existing data base and then run an analysis of gas consumption:
+11. Add a new consumption value to an existing data base and then run an analysis of gas consumption:
 
 
 	consal -i -g
 
-11. Add a new consumption value to an existing data base and then run an analysis of pellets consumption:
+12. Add a new consumption value to an existing data base and then run an analysis of pellets consumption:
 
 
 	consal -i -p
 	
-12. Add a new consumption value to an existing data base and then run an analysis of heat pump energy consumption:
+13. Add a new consumption value to an existing data base and then run an analysis of heat pump energy consumption:
 
 
 	consal -i \--hp
+	
+14. Add the weight of a new furnance charge to an existing data base and then run an analysis of firewood mass consumption:
 
-13. Create a new data base for electrical power consumption:
+
+	consal -i -f
+
+15. Create a new data base for electrical power consumption:
 
 	consal -i -n -e
 
 
-14. Create a new data base for water consumption:
+16. Create a new data base for water consumption:
 
 	consal -i -n -w
 
-15. Create a new data base for heating oil consumption:
+17. Create a new data base for heating oil consumption:
 
 	consal -i -n -o
 	
-16. Create a new data base for gas consumption:
+18. Create a new data base for gas consumption:
 
 	consal -i -n -g
 	
-17. Create a new data base for pellets consumption:
+19. Create a new data base for pellets consumption:
 
 	consal -i -n -p
 	
-18. Create a new data base for heat pump energy consumption:
+20. Create a new data base for heat pump energy consumption:
 
 	consal -i -n \--hp
+	
+21. Create a new data base for firewood mass consumption:
+
+	consal -i -n -f
 
 
 
@@ -218,6 +257,8 @@ Options:
 -   13th June 2021: Migration to python3  
 -   28th October 2022: Fixes due to library updates, update of images
 -   21st November 2022: Added analysis options for gas, pellets, and heat pump energy
+-   15th December 2022: Added analysis option for firewood mass consumption  
+                        Decreased resampling time to 3 hours
 
 
 
