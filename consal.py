@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, heat pump, and firewood consumptions"""
+desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, heat pump, firewood consumptions, and solar yield"""
 
-# $Rev: 81 $:
+# $Rev: 86 $:
 # $Author: ewald $:
-# $Date: 2022-12-15 13:06:52 +0100 (Do, 15. Dez 2022) $:
-# $Id: consal.py 81 2022-12-15 12:06:52Z ewald $
+# $Date: 2025-10-12 14:26:55 +0200 (So, 12. Okt 2025) $:
+# $Id: consal.py 86 2025-10-12 12:26:55Z ewald $
 
-__my_version__ = "$Revision: 81 $"
+__my_version__ = "$Revision: 86 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -17,6 +17,7 @@ GAS_CONSUMPTION_FILE ="gas_energy_consumption.caf"
 PELLETS_CONSUMPTION_FILE ="pellets_energy_consumption.caf"
 HEAT_PUMP_CONSUMPTION_FILE ="heat_pump_energy_consumption.caf"
 FIREWOOD_CONSUMPTION_FILE ="firewood_mass_consumption.caf"
+SOLAR_YIELD_FILE="solar_yield.caf"
 TIME_COL=0
 VALUE_COL= 1
 STRICTLY_INCREASING=1
@@ -31,9 +32,9 @@ MAX_FIREWOOD_CHARGE=15.0                                 # adapt this parameter 
 import sys
 import optparse
 import os
+import scipy
 from scipy import stats, interpolate
 import numpy
-import scipy
 import time
 import datetime
 from messaging import stdMsg, warnMsg, errMsg, setDebugging
@@ -130,6 +131,7 @@ class consumption(object):
         self.cda=self.table.extract_dictionary(TIME_COL, VALUE_COL)
         self.ta=numpy.array(self.tl)
         self.ca=numpy.array(self.cl)
+         
 
     def read_table(self):
         try:
@@ -304,10 +306,11 @@ class consumption(object):
         #scipy.interpolate.splrep: Find the B-spline representation of 1-D curve.
         rep = scipy.interpolate.splrep(self.ta,self.ca, k=1)
         self.edca=interpolate.splev(self.edta,rep)
-        #print len(self.edta)
-        #print number_of_samples
+        #print (len(self.edta))
+        #print (number_of_samples)
 
     def moving_average(self,  window_size,  scale,  title, xlabel, ylabel):
+        #print(scale)
         if window_size < len(self.edta):
             j=0
             i=window_size
@@ -319,8 +322,9 @@ class consumption(object):
                 self.edmaca.append((self.edca[int(i)]-self.edca[int(j)])*scale)
                 i = i + 1
                 j = j + 1
-            #print len(self.edmata)
-            #print len(self.edmaca)
+            #print (len(self.edmata))
+            #print (len(self.edmaca))
+            #print (self.edmaca)
             graphics.my_2D_plot_of_arrays(self.edmata,  self.edmaca,  title, xlabel,  ylabel)
             return 1
         else:
@@ -401,11 +405,12 @@ class consumption(object):
             cad=numpy.diff(self.ca, n=1)
             tad=numpy.diff(self.ta, n=1)
             avg_a=cad/tad
-            #my_2D_plot_of_arrays(self.ta[1:],  avg_a,  'average of '+name,  'time [year]',  ylabel)
-            self.interpolate_at_equidistant_time_steps()
-            self.moving_average(1, 1/RESAMPLE_TIME_STEP, 'average of '+name,  'time [year]',  ylabel)
-            dmad_flag = self.moving_average(MOVING_AVERAGE_DAYS/RESAMPLE_TIME_STEP, 1, '365 days moving average of '+name,  'time [year]',  ylabel)
-            self.delta_moving_average(1/RESAMPLE_TIME_STEP, 'delta of 1 year moving average of '+name,  'time [year]',  ylabel, dmad_flag)
+            if(self.np>2):
+                #my_2D_plot_of_arrays(self.ta[1:],  avg_a,  'average of '+name,  'time [year]',  ylabel)
+                self.interpolate_at_equidistant_time_steps()
+                self.moving_average(1, 1/RESAMPLE_TIME_STEP, 'average of '+name,  'time [year]',  ylabel)
+                dmad_flag = self.moving_average(MOVING_AVERAGE_DAYS/RESAMPLE_TIME_STEP, 1, '365 days moving average of '+name,  'time [year]',  ylabel)
+                self.delta_moving_average(1/RESAMPLE_TIME_STEP, 'delta of 1 year moving average of '+name,  'time [year]',  ylabel, dmad_flag)
 
 
 class float_table(object):
@@ -602,54 +607,60 @@ def main():
     parser.add_option("-v", help="show version", dest="version",
         action='store_true')
 
-    parser.add_option("-e", help="analyze electrical power consumption",
-        dest="epower", action='store_true')
+    parser.add_option("-e", help="analyze electrical power consumption", dest="epower", action='store_true')
+    
+    parser.add_option("-f", help="analyze firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted)", dest="firewood",
+        action='store_true')
+    
+    parser.add_option("-g", help="analyze gas consumption", dest="gas",  action='store_true')
+        
+    parser.add_option("-o", help="analyze oil consumption", dest="oil", action='store_true')
+    
+    parser.add_option("-p", help="analyze pellets consumption", dest="pellets", action='store_true')
+        
+    parser.add_option("-s", help="analyze solar yield", dest="solar", action='store_true')   
+    
+    parser.add_option("-w", help="analyze water consumption", dest="water",  action='store_true')
+            
+    parser.add_option("--hp", help="analyze heat pump energy consumption", dest="heat_pump", action='store_true')   
+        
+
+
+
 
     parser.add_option("--ef", type="string",
         help="file storing data base for electrical power consumption analysis",
         metavar="FILE",dest="file_epower")
-
-    parser.add_option("-o", help="analyze oil consumption", dest="oil",
-        action='store_true')
+        
+    parser.add_option("--ff", type="string",
+        help="file storing data base for firewood mass consumption analysis",
+        metavar="FILE",dest="file_firewood")
+    
+    parser.add_option("--gf", type="string",
+        help="file storing data base for gas consumption analysis",
+        metavar="FILE",dest="file_gas")
 
     parser.add_option("--of", type="string",
         help="file storing data base for oil consumption analysis",
         metavar="FILE",dest="file_oil")
 
-    parser.add_option("-w", help="analyze water consumption", dest="water",
-        action='store_true')
+    parser.add_option("--pf", type="string", 
+        help="file storing data base for pellets consumption analysis",
+        metavar="FILE",dest="file_pellets")
+        
+    parser.add_option("--sf", type="string",
+        help="file storing data base for solar yield analysis",
+        metavar="FILE",dest="file_solar")
 
     parser.add_option("--wf", type="string",
         help="file storing data base for water consumption analysis",
         metavar="FILE",dest="file_water")
         
-    parser.add_option("-g", help="analyze gas consumption", dest="gas",
-        action='store_true')
-
-    parser.add_option("--wg", type="string",
-        help="file storing data base for gas consumption analysis",
-        metavar="FILE",dest="file_gas")
-
-    parser.add_option("-p", help="analyze pellets consumption", dest="pellets",
-        action='store_true')
-
-    parser.add_option("--wp", type="string",
-        help="file storing data base for pellets consumption analysis",
-        metavar="FILE",dest="file_pellets")
-        
-    parser.add_option("--hp", help="analyze heat pump energy consumption", dest="heat_pump",
-        action='store_true')
-
-    parser.add_option("--whp", type="string",
+    parser.add_option("--hpf", type="string",
         help="file storing data base for heat pump energy consumption analysis",
         metavar="FILE",dest="file_heat_pump")
-    
-    parser.add_option("-f", help="analyze firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted)", dest="firewood",
-        action='store_true')
+ 
 
-    parser.add_option("--ff", type="string",
-        help="file storing data base for firewood mass consumption analysis",
-        metavar="FILE",dest="file_firewood")
 
     parser.set_defaults(verbose=0,  no_consistency_check=False, no_greater_than_check=False, newDB=False, 
         wdir=WORKING_DIR, epower=False,
@@ -659,7 +670,8 @@ def main():
         file_gas=GAS_CONSUMPTION_FILE,  pellets=False, 
         file_pellets=PELLETS_CONSUMPTION_FILE,  heat_pump=False, 
         file_heat_pump=HEAT_PUMP_CONSUMPTION_FILE,  firewood=False,
-        file_firewood=FIREWOOD_CONSUMPTION_FILE,  version=False, input_flag=False)
+        file_firewood=FIREWOOD_CONSUMPTION_FILE,  solar=False, 
+        file_solar=SOLAR_YIELD_FILE,  version=False, input_flag=False)
 
     (options, args) = parser.parse_args()
 
@@ -732,6 +744,18 @@ def main():
         pellets.consumption_analysis('pellets energy consumption',
             options.wdir, options.file_pellets,  'pellets energy [kWh]',
             not(options.no_consistency_check), options.input_flag, options.newDB)
+    
+    #analyze solar yield
+    if options.solar:
+        stdMsg("\n\nStarting analysis of solar yield ..\n")
+        #check if data base file is existing and readable
+        check_database_file(options.wdir,  options.file_solar, options.newDB)
+        #initialize data analysis
+        solar=consumption()
+        #run analysis
+        solar.consumption_analysis('solar yield',
+            options.wdir, options.file_solar,  'solar energy [kWh]',
+            not(options.no_consistency_check), options.input_flag, options.newDB)
             
     #analyze heat pump energy consumption
     if options.heat_pump:
@@ -758,7 +782,7 @@ def main():
             not(options.no_consistency_check), options.input_flag, options.newDB)
 
 
-    if not options.epower and not options.oil and not options.water and not options.gas and not options.pellets and not options.heat_pump:
+    if not options.epower and not options.oil and not options.water and not options.gas and not options.pellets and not options.heat_pump and not options.solar:
         stdMsg("\n\nNo analysis has been selected!")
 
     stdMsg("\nFinished\n")

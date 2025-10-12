@@ -1,6 +1,6 @@
 # consumption_analysis [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) <a href='https://ko-fi.com/FUEL4EP' target='_blank'><img height='20' style='border:0px;height:20px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-Python statistic software for consumption analysis of electrical power, fresh water, oil, gas, pellets, heat pump energy, and firewood
+Python statistic software for consumption analysis of electrical power, fresh water, oil, gas, pellets, heat pump energy, firewood, and solar yield. Non-equidistant readings at arbitrary time are supported.
 
 # Installation for [(K)ubuntu] LINUX / Raspian OS:
 
@@ -27,6 +27,7 @@ Optional: Put example data bases into the working directory
 *   pellets_energy_consumption.caf
 *   heat_pump_energy_consumption.caf
 *   firewood_mass_consumption.caf
+*   solar_yield.caf
 
 **Required python version**
 - 3.x
@@ -84,62 +85,37 @@ gas, pellets, and heat pump energy consumptions
 Options:
 
     --version         show program's version number and exit
-  
     -h, --help        show this help message and exit
-  
     --nc              no consistency check
-  
-    -n                create a new data base (always use together with '-i')
-  
+    --ng              no check for greater than entries
+    -n                create a new data base
     -i                input measurement(s)
-  
     --wdir=DIRECTORY  working directory
-  
     -v                show version
-  
     -e                analyze electrical power consumption
-  
-    --ef=FILE         file storing data base for electrical power consumption
-                      analysis
-                    
+    -f                analyze firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted)
+    -g                analyze gas consumption
     -o                analyze oil consumption
-  
-    --of=FILE         file storing data base for oil consumption analysis
-  
+    -p                analyze pellets consumption
+    -s                analyze solar yield
     -w                analyze water consumption
-  
+    --hp              analyze heat pump energy consumption
+    --ef=FILE         file storing data base for electrical power consumption analysis
+    --ff=FILE         file storing data base for firewood mass consumption analysis
+    --gf=FILE         file storing data base for gas consumption analysis
+    --of=FILE         file storing data base for oil consumption analysis
+    --pf=FILE         file storing data base for pellets consumption analysis
+    --sf=FILE         file storing data base for solar yield analysis
     --wf=FILE         file storing data base for water consumption analysis
-    
-     -g                analyze gas consumption
-     
-     --wg=FILE         file storing data base for gas consumption analysis
-     
-     -p                analyze pellets consumption
-     
-     --wp=FILE         file storing data base for pellets consumption analysis
-     
-     -p                analyze pellets consumption
-     
-     --wp=FILE         file storing data base for pellets consumption analysis
-     
-     --hp              analyze heat pump consumption
-     
-     --whp=FILE        file storing data base for heat pump consumption analysis
-     -f                analyze firewood mass consumption of a stove (note: mass
-                       of each oven charge needs to be inputted)
-                       
-    --ff=FILE          file storing data base for firewood mass consumption
-                       analysis                     
+    --hpf=FILE        file storing data base for heat pump energy consumption analysis
                        
 
 # Input modes
 
 1. Input of meter readings
-    - For water, electricity, gas, oil, heat pump energy, pellets energy
-    - The inputted consumption values are already summed-up by the meter 
+    - For water, electricity, gas, oil, heat pump energy, pellets energy, and solar yield the inputted consumption/yield values are already summed-up by the meter 
 2. Input of non-meter readings, e.g. firewood charge of a stove
-    - For firewood charge of a stove
-    - The inputted consumption values are not summed-up by a meter, but **each** furnance charge is weigthed by a scale. The summing-up is done by the 'consal' software instead.
+    - For firewood charge of a stove the inputted consumption values are not summed-up by a meter, but **each** furnance charge is weigthed by a scale. The summing-up is done by the 'consal' software instead.
     - **IMPORTANT**: For summing-up the firewood mass consumption correctly, **each furnance charge needs to be weigthed and the firewood weight needs to be inputted with 'consal -f -i', see also below.**
 
 # Examples on usage:
@@ -152,100 +128,116 @@ Options:
 1. Run analysis on provided data base for electrical power consumption:
 
 	consal -e
-
-
-2. Run analysis on provided data base for water consumption:
-
-	consal -w
-
-
-3. Run analysis on provided data base for heating oil consumption:
-
-
-	consal -o
 	
-4. Run analysis on provided data base for gas consumption:
+2. Run analysis on provided data base for firewood mass consumption:
+
+
+	consal -f
+	
+3. Run analysis on provided data base for gas consumption:
 
 
 	consal -g
+	
+4. Run analysis on provided data base for heating oil consumption:
+
+
+	consal -o
 	
 5. Run analysis on provided data base for pellets consumption:
 
 
 	consal -p
+	
+6. Run analysis on provided data base for solar yield:
 
-6. Run analysis on provided data base for heat pump energy consumption:
+
+	consal -s
+
+
+7. Run analysis on provided data base for water consumption:
+
+	consal -w
+
+8. Run analysis on provided data base for heat pump energy consumption:
 
 
 	consal --hp
 	
-7. Run analysis on provided data base for firewood mass consumption:
 
-
-	consal -f
-
-8. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption:
+9. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption:
 
 	consal -i -e
-
-9. Add a new consumption value to an existing data base and then run an analysis of water consumption:
-
-	consal -i -w
+	
+10. Add the weight of a new furnance charge to an existing data base and then run an analysis of firewood mass consumption:
 
 
-10. Add a new consumption value to an existing data base and then run an analysis of heating oil consumption:
-
-
-	consal -i -o
+	consal -i -f
 	
 11. Add a new consumption value to an existing data base and then run an analysis of gas consumption:
 
 
 	consal -i -g
+	
+12. Add a new consumption value to an existing data base and then run an analysis of heating oil consumption:
 
-12. Add a new consumption value to an existing data base and then run an analysis of pellets consumption:
+
+	consal -i -o
+	
+13. Add a new consumption value to an existing data base and then run an analysis of pellets consumption:
 
 
 	consal -i -p
 	
-13. Add a new consumption value to an existing data base and then run an analysis of heat pump energy consumption:
+14. Add a new yield value to an existing data base and then run an analysis of solar yield:
+
+
+	consal -i -s
+
+15. Add a new consumption value to an existing data base and then run an analysis of water consumption:
+
+	consal -i -w
+
+16. Add a new consumption value to an existing data base and then run an analysis of heat pump energy consumption:
 
 
 	consal -i \--hp
-	
-14. Add the weight of a new furnance charge to an existing data base and then run an analysis of firewood mass consumption:
 
 
-	consal -i -f
-
-15. Create a new data base for electrical power consumption:
+17. Create a new data base for electrical power consumption:
 
 	consal -i -n -e
-
-
-16. Create a new data base for water consumption:
-
-	consal -i -n -w
-
-17. Create a new data base for heating oil consumption:
-
-	consal -i -n -o
 	
-18. Create a new data base for gas consumption:
+18. Create a new data base for firewood mass consumption:
+
+	consal -i -n -f
+	
+19. Create a new data base for gas consumption:
 
 	consal -i -n -g
 	
-19. Create a new data base for pellets consumption:
+20. Create a new data base for heating oil consumption:
+
+	consal -i -n -o
+	
+21. Create a new data base for pellets consumption:
 
 	consal -i -n -p
 	
-20. Create a new data base for heat pump energy consumption:
+22. Create a new data base for solar yield:
+
+	consal -i -n -s
+
+
+23. Create a new data base for water consumption:
+
+	consal -i -n -w
+	
+24. Create a new data base for heat pump energy consumption:
 
 	consal -i -n \--hp
 	
-21. Create a new data base for firewood mass consumption:
 
-	consal -i -n -f
 
 
 
@@ -259,6 +251,7 @@ Options:
 -   21st November 2022: Added analysis options for gas, pellets, and heat pump energy
 -   15th December 2022: Added analysis option for firewood mass consumption  
                         Decreased resampling time to 3 hours
+-	12th October 2025:  Added analysis option for solar yield, reordered and renamed options for consistency
 
 
 
