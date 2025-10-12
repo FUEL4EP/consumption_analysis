@@ -80,7 +80,7 @@ Optional: Put example data bases into the working directory
 Usage: python3 ./consal.py [options]
 
 consal.py is doing a statistical analysis of electrical power,  water,  oil,
-gas, pellets, and heat pump energy consumptions
+gas, pellets, heat pump, firewood consumptions, and solar yield
 
 Options:
 
