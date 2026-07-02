@@ -1,12 +1,12 @@
 #graphics.py
 # -*- coding: utf-8 -*-
 
-# $Rev: 74 $:  
+# $Rev: 87 $:  
 # $Author: ewald $:  
-# $Date: 2022-10-23 15:44:59 +0200 (So, 23. Okt 2022) $:
-# $Id: graphics.py 74 2022-10-23 13:44:59Z ewald $ 
+# $Date: 2026-07-02 13:20:38 +0200 (Do, 02. Jul 2026) $:
+# $Id: graphics.py 87 2026-07-02 11:20:38Z ewald $ 
 
-__version__ = "$Revision: 74 $"
+__version__ = "$Revision: 87 $"
 
 import pylab
 from pylab import  plt, DateFormatter,  getp, setp
@@ -122,9 +122,9 @@ def my_2D_plot_of_arrays(xa, ya, title, xlabel, ylabel,  *add_graphs):
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     labels = getp(ax, 'xticklabels')
-    setp(labels, color='g', fontsize=9, fontname="Verdana" )
+    setp(labels, color='g', fontsize=9, fontname="DejaVu Sans" )
     labels = getp(ax, 'yticklabels')
-    setp(labels, color='g', fontsize=9, fontname="Verdana" )
+    setp(labels, color='g', fontsize=9, fontname="DejaVu Sans" )
     
     
     ax.grid(True)

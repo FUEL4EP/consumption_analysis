@@ -237,7 +237,9 @@ Options:
 
 	consal -i -n \--hp
 	
+25. Add a new consumption value to an existing data base and then run an analysis of electrical power consumption, allow smaller input values than last input. This is e.g. required for a plug-in solar panels for balconies in conjunction with a **reverse-running Ferraris meter**
 
+	consal --ng -i -e
 
 
 
@@ -246,6 +248,7 @@ Options:
 
 # Update history:
 
+-	02nd July 2026: Added code for option '--ng' that is required e.g. for  **reverse-running Ferraris meters**
 -   13th June 2021: Migration to python3  
 -   28th October 2022: Fixes due to library updates, update of images
 -   21st November 2022: Added analysis options for gas, pellets, and heat pump energy

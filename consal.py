@@ -3,12 +3,12 @@
 
 desc="""consal.py is doing a statistical analysis of electrical power,  water,  oil, gas, pellets, heat pump, firewood consumptions, and solar yield"""
 
-# $Rev: 86 $:
+# $Rev: 87 $:
 # $Author: ewald $:
-# $Date: 2025-10-12 14:26:55 +0200 (So, 12. Okt 2025) $:
-# $Id: consal.py 86 2025-10-12 12:26:55Z ewald $
+# $Date: 2026-07-02 13:20:38 +0200 (Do, 02. Jul 2026) $:
+# $Id: consal.py 87 2026-07-02 11:20:38Z ewald $
 
-__my_version__ = "$Revision: 86 $"
+__my_version__ = "$Revision: 87 $"
 
 ELECTRICAL_POWER_CONSUMPTION_FILE="electrical_power_consumption.caf"
 WATER_CONSUMPTION_FILE="water_consumption.caf"
@@ -26,7 +26,7 @@ MOVING_AVERAGE_DAYS=365
 RESAMPLE_TIME_STEP=0.125    # resample every 3 hours
 EPSILON=1e-6
 ALPHA=1e-2
-MAX_MEASUREMENT_VARIATION=4
+MAX_MEASUREMENT_VARIATION=8
 MAX_FIREWOOD_CHARGE=15.0                                 # adapt this parameter to the maximum allowed charge of your stove
 
 import sys
@@ -133,7 +133,7 @@ class consumption(object):
         self.ca=numpy.array(self.cl)
          
 
-    def read_table(self):
+    def read_table(self, greater_than_previous_input_check_on):
         try:
             fn=self.wd+r'/'+self.table_name
             if  os.stat(fn).st_size==0:
@@ -149,7 +149,7 @@ class consumption(object):
         except IOError:
             errMsg('Cannot open for read %s' %  fn)
         self.status=True
-        self.table=float_table(list, self.name, 2)
+        self.table=float_table(list, self.name, 2, greater_than_previous_input_check_on)
         self.update_consumption()
         if messaging.debug:
             self.table.print_table()
@@ -176,7 +176,7 @@ class consumption(object):
         else:
             warnMsg("Method not executed due to previous errors!\n")
 
-    def check_measurement_input(self, vec):
+    def check_measurement_input(self, vec, greater_than_previous_input_check_on):
         if self.status  != False:
             if self.increment_flag == False:
                 # check input from a meter
@@ -190,9 +190,11 @@ class consumption(object):
                         if last_row[j] >= el:
                             if j == 0:
                                 print ("\nWrong input: Actual timestamp \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
+                                return False
                             if j == 1:
-                                print ("\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
-                            return False
+                                if greater_than_previous_input_check_on == True:
+                                    print ("\nWrong input: Actual measurement \'%.3f\' is smaller than latest table entry \'%.3f\'\n" % (el,  last_row[j]))
+                                    return False
                         else:
                             if j==1:
                                 actual_slope=(el-last_row[j])/(vec[0]-last_row[0])
@@ -232,16 +234,17 @@ class consumption(object):
                     input_value = input_value + last_row[1]
         return input_value
 
-    def add_row(self, row):
+    def add_row(self, row, greater_than_previous_input_check_on):
         if self.status != False:
             frow=self.convert2float(row)
             if not self.newDB_flag:
-                self.check_strictly_increasing_new_row(frow)
+                if greater_than_previous_input_check_on == True:
+                    self.check_strictly_increasing_new_row(frow)
                 if len(frow) != self.table.dx:
                     errMsg("Dimension do not match:\nRequired: %d Actual: %d\n" % ( self.table.dx, len(frow)))
                     self.status=False
             if self.status:
-                self.table.add_row(frow)
+                self.table.add_row(frow, greater_than_previous_input_check_on)
                 self.update_consumption()
                 if messaging.debug:
                     self.table.print_table()
@@ -288,7 +291,8 @@ class consumption(object):
     def linear_regression(self):
         """calculates liner regression of self.ta versus self.ca"""
         slope, intercept, r_value, p_value, std_err = stats.linregress(self.ta, self.ca)
-        #print slope, intercept, r_value, p_value, std_err
+        #print (slope, intercept, r_value, p_value, std_err)
+        print ("slope : %.2f" % slope)
         yi=slope*self.ta+intercept
         return yi
 
@@ -347,7 +351,7 @@ class consumption(object):
                 #print len(self.dedmaca)
                 graphics.my_2D_plot_of_arrays(self.dedmata,  self.dedmaca,  title, xlabel,  ylabel)
 
-    def input_measurement(self, consistency_check_on):
+    def input_measurement(self, consistency_check_on,  greater_than_previous_input_check_on):
         
         if self.status != False:
             if not self.newDB_flag:
@@ -357,7 +361,7 @@ class consumption(object):
         if self.status != False:
             # determine local time for the local timezone
             t1      = datetime.datetime(1970, 1, 1, 0, 0, 0)   # 1970-01-01 00:0:0
-            tl      = datetime.datetime.now()
+            tl       = datetime.datetime.now()
             tnow=(time.mktime(tl.timetuple())-time.mktime(t1.timetuple()))/24/3600
             done = False
             while not done:
@@ -365,7 +369,7 @@ class consumption(object):
                 if self.newDB_flag:
                     done = True
                 else:
-                    done = self.check_measurement_input([tnow, fp])
+                    done = self.check_measurement_input([tnow, fp],  greater_than_previous_input_check_on)
             # accumulate firewood charge of stove to last firewood consumption value, i.e. increment_flag == True
             #print ( fp )
             fp = self.accumulate_charge_in_increment_mode(fp)
@@ -373,24 +377,25 @@ class consumption(object):
             if self.newDB_flag:
                 tlminus60 = tl - datetime.timedelta(seconds=60) #add an artificial table entry for the first entry, timesamp is 60 seconds earlier
                 tnowminus60=(time.mktime(tlminus60.timetuple())-time.mktime(t1.timetuple()))/24/3600
-                self.add_row( [tnowminus60, fp-ALPHA])
-                self.add_row( [tnow, fp])
+                self.add_row( [tnowminus60, fp-ALPHA], greater_than_previous_input_check_on)
+                self.add_row( [tnow, fp], greater_than_previous_input_check_on)
             else:
-                self.add_row( [tnow, fp])
+                self.add_row( [tnow, fp], greater_than_previous_input_check_on)
         else:
             warnMsg("Input of measurement value abandoned due to previous errors!\n")
 
     def consumption_analysis(self,  name,  working_dir,  input_file,  ylabel,
-            consistency_check_on, input_flag, newDB_flag):
+            consistency_check_on, input_flag, newDB_flag, greater_than_previous_input_check_on):
         self.set_name(name)
         self.set_increment_flag(name)
         self.set_working_dir(working_dir)
         self.set_table_name(input_file)
         self.set_newDB_flag(newDB_flag)
-        self.read_table()
+        self.read_table(greater_than_previous_input_check_on)
         self.table.consistency_checks_on=consistency_check_on
+        self.table.greater_than_previous_input_check_on=greater_than_previous_input_check_on
         if input_flag:
-            self.input_measurement(consistency_check_on)
+            self.input_measurement(consistency_check_on, greater_than_previous_input_check_on)
         #self.add_row( [4.01,'6.999'])
         #self.add_column([ '6.001', '6.000', '6.0021',  6.003], STRICTLY_INCREASING)
         self.set_write_table_name(name + ".caf")
@@ -418,7 +423,7 @@ class float_table(object):
 
     """
 
-    def __init__(self,  list, name, dim):
+    def __init__(self,  list, name, dim, greater_than_previous_input_check_on):
         """                 """
         self.name=name
         self.status=True
@@ -430,8 +435,9 @@ class float_table(object):
         self.dy=0
         self.status=True
         self.consistency_checks_on=True
-        self.strictly_increasing_check_mask=[1 for i in range(dim)]
-        self.consistency_checks()
+        self.strictly_increasing_check_mask=[greater_than_previous_input_check_on for i in range(dim)]
+        self.consistency_checks(greater_than_previous_input_check_on)
+        self.greater_than_previous_input_check_on=True
 
     def set_strictly_increasing_check_mask(self,  bitposition):
         self.strictly_increasing_check_mask[bitposition]=1
@@ -439,11 +445,12 @@ class float_table(object):
     def reset_strictly_increasing_check_mask(self,  bitposition):
         self.strictly_increasing_check_mask[bitposition]=0
 
-    def consistency_checks(self):
+    def consistency_checks(self, greater_than_previous_input_check_on):
         if self.consistency_checks_on:
             self.check_dimension()
             self.check_float()
-            self.check_strictly_increasing()
+            if not(greater_than_previous_input_check_on):
+                self.check_strictly_increasing()
             if not self.status:
                 errMsg("Exiting because of previous fatal errors\n")
                 sys.exit(1)
@@ -539,7 +546,7 @@ class float_table(object):
             warnMsg("Table: %s: Attempt to add column vector of wrong size!" % self.name)
             self.status=False
 
-    def add_row(self, newrow):
+    def add_row(self, newrow, greater_than_previous_input_check_on):
         nextrow=self.dy
         if self.dy > 1:
             if len(newrow) == self.dx:
@@ -550,7 +557,7 @@ class float_table(object):
                     addstr+=' '  + str(el)
                 addstr=addstr.lstrip()
                 self.list.append(addstr)
-                self.consistency_checks()
+                self.consistency_checks(greater_than_previous_input_check_on)
             else:
                 warnMsg("Table: %s: Attempt to add row vector of wrong size!" % self.name)
                 self.status=False
@@ -693,7 +700,7 @@ def main():
         #run analysis
         power_supply.consumption_analysis('electrical power consumption',
             options.wdir, options.file_epower,  'electrical power [kWh]',
-            not(options.no_consistency_check), options.input_flag, options.newDB)
+            not(options.no_consistency_check), options.input_flag, options.newDB, not(options.no_greater_than_check))
 
 
 
@@ -707,7 +714,7 @@ def main():
         #run analysis
         oil.consumption_analysis('oil consumption', options.wdir,
             options.file_oil,  'burning time of oil heating[h]',
-            not(options.no_consistency_check), options.input_flag,options.newDB )
+            not(options.no_consistency_check), options.input_flag,options.newDB, not(options.no_greater_than_check) )
 
 
     #analyze water consumption2
@@ -719,7 +726,7 @@ def main():
         water=consumption()
         #run analysis
         water.consumption_analysis('water consumption', options.wdir,
-            options.file_water,  'fresh water [m^3]', not(options.no_consistency_check),options.input_flag,options.newDB )
+            options.file_water,  'fresh water [m^3]', not(options.no_consistency_check),options.input_flag,options.newDB, not(options.no_greater_than_check) )
             
     #analyze gas consumption
     if options.gas:
@@ -731,7 +738,7 @@ def main():
         #run analysis
         gas.consumption_analysis('gas energy consumption',
             options.wdir, options.file_gas,  'gas energy [kWh]',
-            not(options.no_consistency_check), options.input_flag, options.newDB)
+            not(options.no_consistency_check), options.input_flag, options.newDB, not(options.no_greater_than_check))
             
     #analyze pellets consumption
     if options.pellets:
@@ -743,7 +750,7 @@ def main():
         #run analysis
         pellets.consumption_analysis('pellets energy consumption',
             options.wdir, options.file_pellets,  'pellets energy [kWh]',
-            not(options.no_consistency_check), options.input_flag, options.newDB)
+            not(options.no_consistency_check), options.input_flag, options.newDB, not(options.no_greater_than_check))
     
     #analyze solar yield
     if options.solar:
@@ -755,7 +762,7 @@ def main():
         #run analysis
         solar.consumption_analysis('solar yield',
             options.wdir, options.file_solar,  'solar energy [kWh]',
-            not(options.no_consistency_check), options.input_flag, options.newDB)
+            not(options.no_consistency_check), options.input_flag, options.newDB, not(options.no_greater_than_check))
             
     #analyze heat pump energy consumption
     if options.heat_pump:
@@ -767,13 +774,13 @@ def main():
         #run analysis
         heat_pump.consumption_analysis('heat pump energy consumption',
             options.wdir, options.file_heat_pump,  'heat pump energy [kWh]',
-            not(options.no_consistency_check), options.input_flag, options.newDB)
+            not(options.no_consistency_check), options.input_flag, options.newDB, not(options.no_greater_than_check))
         
     #analyze firewood mass consumption
     if options.firewood:
         stdMsg("\n\nStarting analysis of firewood mass consumption of a stove (note: mass of each oven charge needs to be inputted) ..\n")
         #check if data base file is existing and readable
-        check_database_file(options.wdir,  options.file_firewood, options.newDB)
+        check_database_file(options.wdir,  options.file_firewood, options.newDB, not(options.no_greater_than_check))
         #initialize data analysis
         firewood=consumption()
         #run analysis
